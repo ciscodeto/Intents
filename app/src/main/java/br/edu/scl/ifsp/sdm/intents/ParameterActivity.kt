@@ -1,21 +1,30 @@
 package br.edu.scl.ifsp.sdm.intents
 
+import br.edu.scl.ifsp.sdm.intents.Constants.PARAMETRO_EXTRA
+import br.edu.scl.ifsp.sdm.intents.databinding.ActivityParameterBinding
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import br.edu.scl.ifsp.sdm.intents.databinding.ActivityParameterBinding
 
-class ParameterActivity : AppCompatActivity() {
-    private val activityParameterBinding: ActivityParameterBinding by lazy {
+class ParametroActivity : AppCompatActivity() {
+    private val apb: ActivityParameterBinding by lazy{
         ActivityParameterBinding.inflate(layoutInflater)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(activityParameterBinding.root)
-        setSupportActionBar(activityParameterBinding.toolbarIn.toolbar)
-        supportActionBar?.subtitle = localClassName
+        setContentView(apb.root)
 
-        activityParameterBinding.returnCloseBt.setOnClickListener{
-
+        intent.getStringExtra(PARAMETRO_EXTRA)?.let{
+            apb.parameterEt.setText(it)
         }
+
+        apb.returnCloseBt.setOnClickListener {
+            val parameter = apb.returnCloseBt.text.toString()
+            val intentResult = Intent()
+            intentResult.putExtra(PARAMETRO_EXTRA, parameter)
+            setResult(RESULT_OK, intentResult)
+            finish()
+        }
+
     }
 }
