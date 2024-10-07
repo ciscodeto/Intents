@@ -1,15 +1,20 @@
 package br.edu.scl.ifsp.sdm.intents
 
+import android.Manifest.permission.CALL_PHONE
 import android.content.Intent
 import android.content.Intent.ACTION_CALL
 import android.content.Intent.ACTION_CHOOSER
 import android.content.Intent.ACTION_DIAL
+import android.content.Intent.ACTION_PICK
 import android.content.Intent.ACTION_VIEW
 import android.content.Intent.EXTRA_INTENT
 import android.content.Intent.EXTRA_TITLE
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -23,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
     private lateinit var parl: ActivityResultLauncher<Intent>
-    private lateinit var callArl: ActivityResultLauncher<String>
+    private lateinit var callPermissionArl: ActivityResultLauncher<String>
     private lateinit var pickImageArl : ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        callArl = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        callPermissionArl = registerForActivityResult(ActivityResultContracts.RequestPermission()){
                 permissionAccepted ->
             if(permissionAccepted){
                 callNumber(call = true)
@@ -84,14 +89,29 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.callMi -> {
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(CALL_PHONE) == PERMISSION_GRANTED) {
+                        callNumber(call = true)
+                    } else {
+                        callPermissionArl.launch(CALL_PHONE)
+                    }
+                }
+                else{
+                    callNumber(call = true)
+                }
                 true
             }
 
             R.id.dialMi -> {
+                callNumber(call = false)
                 true
             }
 
             R.id.pickMi -> {
+                val pickImageIntent = Intent(ACTION_PICK)
+                val imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
+                pickImageIntent.setDataAndType(Uri.parse(imagePath),"image/*")
+                pickImageArl.launch(pickImageIntent)
                 true
             }
 
