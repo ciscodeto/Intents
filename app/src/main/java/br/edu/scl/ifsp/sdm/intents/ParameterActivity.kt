@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
-class ParametroActivity : AppCompatActivity() {
+class ParameterActivity : AppCompatActivity() {
     private val apb: ActivityParameterBinding by lazy{
         ActivityParameterBinding.inflate(layoutInflater)
     }
