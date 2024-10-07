@@ -1,13 +1,17 @@
 package br.edu.scl.ifsp.sdm.intents
 
 import android.content.Intent
+import android.content.Intent.ACTION_CALL
+import android.content.Intent.ACTION_DIAL
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import br.edu.scl.ifsp.sdm.intents.Constants.PARAMETRO_EXTRA
 import br.edu.scl.ifsp.sdm.intents.databinding.ActivityMainBinding
 
@@ -16,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
     private lateinit var parl: ActivityResultLauncher<Intent>
+    private lateinit var callArl: ActivityResultLauncher<String>
+    private lateinit var pickImageArl : ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +33,32 @@ class MainActivity : AppCompatActivity() {
             Intent(this, ParameterActivity::class.java).also {
                 it.putExtra(PARAMETRO_EXTRA, amb.parameterTv.text.toString())
                 parl.launch(it)
+            }
+        }
+
+        parl = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.getStringExtra(PARAMETRO_EXTRA)?.let {
+                    amb.parameterTv.text = it
+                }
+            }
+        }
+        callArl = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+                permissionAccepted ->
+            if(permissionAccepted){
+                callNumber(call = true)
+            }else{
+                Toast.makeText(this,"Permissao necessaria para continuar", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        pickImageArl= registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+                result ->
+            if(result.resultCode == RESULT_OK){
+                result.data?.data?.let { imageUri ->amb.parameterBt.text = imageUri.toString()
+                    Intent(ACTION_VIEW, imageUri).also { startActivity(it) }}
             }
         }
     }
@@ -68,5 +100,12 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    private fun callNumber(call: Boolean){
+        val numberUri:Uri = Uri.parse("tel:${amb.parameterBt.text}")
+        val callIntent = Intent(if(call) ACTION_CALL else ACTION_DIAL)
+        callIntent.data = numberUri
+        startActivity(callIntent)
     }
 }
