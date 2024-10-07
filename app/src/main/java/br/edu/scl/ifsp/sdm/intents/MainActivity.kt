@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         pickImageArl= registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
                 result ->
             if(result.resultCode == RESULT_OK){
-                result.data?.data?.let { imageUri ->amb.parameterBt.text = imageUri.toString()
+                result.data?.data?.let { imageUri ->amb.parameterTv.text = imageUri.toString()
                     Intent(ACTION_VIEW, imageUri).also { startActivity(it) }}
             }
         }
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun callNumber(call: Boolean){
-        val numberUri:Uri = Uri.parse("tel:${amb.parameterBt.text}")
+        val numberUri:Uri = Uri.parse("tel:${amb.parameterTv.text}")
         val callIntent = Intent(if(call) ACTION_CALL else ACTION_DIAL)
         callIntent.data = numberUri
         startActivity(callIntent)
