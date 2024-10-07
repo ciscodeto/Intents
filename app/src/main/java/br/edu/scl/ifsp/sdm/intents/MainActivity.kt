@@ -2,8 +2,11 @@ package br.edu.scl.ifsp.sdm.intents
 
 import android.content.Intent
 import android.content.Intent.ACTION_CALL
+import android.content.Intent.ACTION_CHOOSER
 import android.content.Intent.ACTION_DIAL
 import android.content.Intent.ACTION_VIEW
+import android.content.Intent.EXTRA_INTENT
+import android.content.Intent.EXTRA_TITLE
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -75,8 +78,8 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.viewMi -> {
                 val url: Uri = Uri.parse(amb.parameterTv.text.toString())
-                val navegadorIntent: Intent = Intent(ACTION_VIEW, url)
-                startActivity(navegadorIntent)
+                val browserIntent = Intent(ACTION_VIEW, url)
+                startActivity(browserIntent)
                 true
             }
 
@@ -93,6 +96,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.chooserMi -> {
+                Uri.parse(amb.parameterTv.text.toString()).let{uri ->
+                    Intent(ACTION_VIEW, uri).also {browserIntent ->
+                        val chooseAppIntent = Intent(ACTION_CHOOSER)
+                        chooseAppIntent.putExtra(EXTRA_TITLE, "Escolha seu navegador favorito")
+                        chooseAppIntent.putExtra(EXTRA_INTENT, browserIntent)
+                        startActivity(chooseAppIntent)
+                    }
+                }
                 true
             }
 

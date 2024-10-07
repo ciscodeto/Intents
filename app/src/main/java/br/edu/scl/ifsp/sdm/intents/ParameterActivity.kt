@@ -19,7 +19,7 @@ class ParameterActivity : AppCompatActivity() {
         }
 
         apb.returnCloseBt.setOnClickListener {
-            val parameter = apb.returnCloseBt.text.toString()
+            val parameter = apb.parameterEt.text.toString()
             val intentResult = Intent()
             intentResult.putExtra(PARAMETRO_EXTRA, parameter)
             setResult(RESULT_OK, intentResult)
