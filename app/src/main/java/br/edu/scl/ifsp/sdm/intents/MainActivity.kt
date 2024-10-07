@@ -1,24 +1,33 @@
 package br.edu.scl.ifsp.sdm.intents
 
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
+import br.edu.scl.ifsp.sdm.intents.Constants.PARAMETRO_EXTRA
 import br.edu.scl.ifsp.sdm.intents.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private val activityMainBinding: ActivityMainBinding by lazy {
+    private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+    private lateinit var parl: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(activityMainBinding.root)
-        setSupportActionBar(activityMainBinding.toolbarIn.toolbar)
+        setContentView(amb.root)
+        setSupportActionBar(amb.toolbarIn.toolbar)
         supportActionBar?.subtitle = localClassName
 
-        activityMainBinding.parameterBt.setOnClickListener {
-
+        amb.parameterBt.setOnClickListener {
+            Intent(this, ParameterActivity::class.java).also {
+                it.putExtra(PARAMETRO_EXTRA, amb.parameterTv.text.toString())
+                parl.launch(it)
+            }
         }
     }
 
@@ -33,6 +42,9 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.viewMi -> {
+                val url: Uri = Uri.parse(amb.parameterTv.text.toString())
+                val navegadorIntent: Intent = Intent(ACTION_VIEW, url)
+                startActivity(navegadorIntent)
                 true
             }
 
